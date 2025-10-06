@@ -1,0 +1,17 @@
+{
+    "name": "clinic/clinic_system",
+    "license": "mit",
+    "autoload": {
+        "psr-4": {
+            "Clinic\\ClinicSystem\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "mousa8080",
+            "email": "ahmedmousa010203@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
