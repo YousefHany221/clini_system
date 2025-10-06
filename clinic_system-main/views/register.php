@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
 $success = $_SESSION['success'] ?? '';

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
 $success = $_SESSION['success'] ?? '';
@@ -11,6 +13,14 @@ unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
         
         <?php if ($success): ?>
             <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+        <?php endif; ?>
+
+        <?php if (isset($errors['login'])): ?>
+            <div class="alert alert-danger">
+                <?php foreach ($errors['login'] as $error): ?>
+                    <div><?php echo htmlspecialchars($error); ?></div>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
 
         <form class="form" method="POST" action="validatoin/Controllers.php">

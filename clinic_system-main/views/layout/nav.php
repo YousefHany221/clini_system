@@ -1,3 +1,11 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$isLoggedIn = isset($_SESSION['user']) && $_SESSION['user']['logged_in'] === true;
+$userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
+?>
+
 <nav class="navbar navbar-expand-lg navbar-expand-md bg-blue sticky-top">
     <div class="container">
         <div class="navbar-brand">
@@ -18,12 +26,15 @@
                 <a type="button" class="btn btn-outline-light navigation--button"
                     href="./index.php?page=contact">Contact</a>
 
-                
-                <a type="button" class="btn btn-outline-light navigation--button" href="./validatoin/logout.php">Logout</a>
-
-                <!-- Show login and register if not logged in -->
-                <a type="button" class="btn btn-outline-light navigation--button" href="./index.php?page=login">login</a>
-                <a type="button" class="btn btn-outline-light navigation--button" href="./index.php?page=register">register</a>
+                <?php if ($isLoggedIn): ?>
+                    <!-- Show user name and logout if logged in -->
+                    <a type="button" class="btn btn-outline-light navigation--button" href="./validatoin/logout.php">Logout</a>
+                    <span class="text-white">مرحباً، <?php echo htmlspecialchars($userName); ?></span>
+                    <?php else: ?>
+                        <!-- Show login and register if not logged in -->
+                        <a type="button" class="btn btn-outline-light navigation--button" href="./index.php?page=login">login</a>
+                        <a type="button" class="btn btn-outline-light navigation--button" href="./index.php?page=register">register</a>
+                <?php endif; ?>
 
             </div>
         </div>

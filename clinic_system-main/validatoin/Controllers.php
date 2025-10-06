@@ -1,5 +1,9 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../Clinic/database.php';
+require_once __DIR__ . '/../config/database.php';
 require_once 'Validator.php';
 require_once 'User.php';
 
@@ -34,8 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Here you would normally save to database
             $user = new User($pdo);
             if ($user->register($_POST['name'], $_POST['email'], $_POST['phone'], $_POST['password'])) {
+                // Set user session after successful registration
+                $_SESSION['user'] = [
+                    'email' => $_POST['email'],
+                    'name' => $_POST['name'],
+                    'logged_in' => true
+                ];
                 $_SESSION['success'] = "تم التسجيل بنجاح!";
-                header('Location: ../index.php?page=login');
+                header('Location: ../index.php?page=home');
                 exit;
             } else {
                 $_SESSION['errors']['general'][] = "حدث خطأ أثناء التسجيل!";
@@ -43,9 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: ../index.php?page=register');
                 exit;
             }
-            $_SESSION['success'] = "Registration successful!";
-            header('Location: ../index.php?page=login');
-            exit;
         }
     } elseif ($action === 'login') {
         // Login validation rules
@@ -75,23 +82,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':email' => $email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // ✅ تحقق من وجود المستخدم أولًا
-            if ($user && password_verify($password, $user['password'])) {
-
-                $_SESSION['user'] = [
-                    'email' => $user['email'],
-                    'name' => $user['name'], // الاسم من قاعدة البيانات
-                    'logged_in' => true
-                ];
-
-                $_SESSION['success'] = "Login successful!";
-                header('Location: ../index.php?page=home');
-                exit;
-            } else {
-                $_SESSION['errors']['login'][] = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+            // Debug: Check if user exists
+            if (!$user) {
+                $_SESSION['errors']['login'][] = "المستخدم غير موجود. تأكد من البريد الإلكتروني.";
                 header('Location: ../index.php?page=login');
                 exit;
             }
+
+            // Debug: Check password verification
+            if (!password_verify($password, $user['password'])) {
+                $_SESSION['errors']['login'][] = "كلمة المرور غير صحيحة.";
+                header('Location: ../index.php?page=login');
+                exit;
+            }
+
+            // If we reach here, login is successful
+            $_SESSION['user'] = [
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'logged_in' => true
+            ];
+
+            $_SESSION['success'] = "تم تسجيل الدخول بنجاح!";
+            header('Location: ../index.php?page=home');
+            exit;
         }
     }
 }

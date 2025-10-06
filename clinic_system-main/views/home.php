@@ -2,11 +2,28 @@
 
 <!-- header -->
 
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$success = $_SESSION['success'] ?? '';
+unset($_SESSION['success']);
+?>
+
 <body>
     <div class="page-wrapper">
         <!-- nav -->
 
         <!-- nav -->
+        
+        <?php if ($success): ?>
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($success); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        <?php endif; ?>
         <div class="container-fluid bg-blue text-white pt-3">
             <div class="container pb-5">
                 <div class="row gap-2">
