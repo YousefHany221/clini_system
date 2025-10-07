@@ -8,12 +8,12 @@ require_once "./config/database.php";
 require_once "./Clinic/Contact.php";
 require_once "./Clinic/database.php";
 
-use Clini_system_mousa\Clinic_system\Clinic\Contact\Contact;
+use Clini_system_mousa\Clinic_system\Clinic\Contact;
 
 // Create PDO connection
-$db = Database::get_instance($config);
-$pdo = $db->get_connection();
-
+// $db = Database::get_instance($config);
+// $pdo = $db->get_connection();
+$pdo = Conn::connection($config);
 $message = '';
 $messageType = '';
 
@@ -33,16 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
         $message = 'Please enter a valid email address.';
         $messageType = 'danger';
     } else {
-        // Create contact message
-        $contact = Contact::create_contact($pdo, $name, $email, $phone, $subject, $messageText);
-        
-        if ($contact) {
-            $message = 'Message sent successfully! We will get back to you soon.';
-            $messageType = 'success';
-            // Clear form data
-            $_POST = [];
-        } else {
-            $message = 'Failed to send message. Please try again.';
+        try {
+            // Create contact message
+            $contact = Contact::create_contact($pdo, $name, $email, $phone, $subject, $messageText);
+            if ($contact) {
+                $message = 'Message sent successfully! We will get back to you soon.';
+                $messageType = 'success';
+                // Clear form data
+                $_POST = [];
+            } else {
+                $message = 'Failed to send message. Please try again.';
+                $messageType = 'danger';
+            }
+        } catch (PDOException $ex) {
+            $message = $ex->getMessage();
             $messageType = 'danger';
         }
     }

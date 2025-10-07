@@ -15,6 +15,14 @@ unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
             <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
 
+        <?php if (isset($errors['general'])): ?>
+            <div class="alert alert-danger">
+                <?php foreach ($errors['general'] as $error): ?>
+                    <div><?php echo htmlspecialchars($error); ?></div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
         <form class="form" method="POST" action="validatoin/Controllers.php">
             <input type="hidden" name="action" value="register">
 

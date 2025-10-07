@@ -37,18 +37,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Here you would normally save to database
             $user = new User($pdo);
-            if ($user->register($_POST['name'], $_POST['email'], $_POST['phone'], $_POST['password'])) {
-                // Set user session after successful registration
-                $_SESSION['user'] = [
-                    'email' => $_POST['email'],
-                    'name' => $_POST['name'],
-                    'logged_in' => true
-                ];
-                $_SESSION['success'] = "تم التسجيل بنجاح!";
-                header('Location: ../index.php?page=home');
-                exit;
-            } else {
-                $_SESSION['errors']['general'][] = "حدث خطأ أثناء التسجيل!";
+            try {
+                if ($user->register($_POST['name'], $_POST['email'], $_POST['phone'], $_POST['password'])) {
+                    // Set user session after successful registration
+                    $_SESSION['user'] = [
+                        'email' => $_POST['email'],
+                        'name' => $_POST['name'],
+                        'logged_in' => true
+                    ];
+                    $_SESSION['success'] = "تم التسجيل بنجاح!";
+                    header('Location: ../index.php?page=home');
+                    exit;
+                } else {
+                    $_SESSION['errors']['general'][] = "حدث خطأ أثناء التسجيل!";
+                    $_SESSION['old'] = $_POST;
+                    header('Location: ../index.php?page=register');
+                    exit;
+                }
+            } catch (PDOException $ex) {
+                // Check if it's a duplicate email error and put it under the email field
+                if ($ex->getCode() == 23000 && strpos($ex->getMessage(), 'Duplicate entry') !== false && strpos($ex->getMessage(), 'email') !== false) {
+                    $_SESSION['errors']['email'][] = $ex->getMessage();
+                } else {
+                    $_SESSION['errors']['general'][] = $ex->getMessage();
+                }
                 $_SESSION['old'] = $_POST;
                 header('Location: ../index.php?page=register');
                 exit;
