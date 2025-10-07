@@ -1,44 +1,33 @@
 <?php
-require_once __DIR__ . '/../Clinic/database.php';
-require_once __DIR__ . '/../config/database.php';
+
 class User
 {
     private $conn;
 
-    public function __construct( $conn)
+    public function __construct($conn)
     {
-        $this->conn= $conn;
+        $this->conn = $conn;
     }
 
     public function register($name, $email, $phone, $password)
     {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO patient (name, email, phone, password) VALUES (?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssss", $name, $email, $phone, $hashedPassword);
+        try {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO patient (name, email, phone, password) VALUES (?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
 
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
+            if ($stmt->execute([$name, $email, $phone, $hashedPassword])) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $ex) {
+            // Check if it's a duplicate email error
+            if ($ex->getCode() == 23000 && strpos($ex->getMessage(), 'Duplicate entry') !== false && strpos($ex->getMessage(), 'email') !== false) {
+                throw new PDOException('This email address is already registered. Please use a different email address or try logging in.', 23000, $ex);
+            }
+            // Re-throw other PDO exceptions
+            throw $ex;
         }
     }
-}
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['action'] === 'register') {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $password = $_POST['password'];
-
-    $user = new User($conn);
-    if ($user->register($name, $email, $phone, $password)) {
-        $_SESSION['success'] = "تم التسجيل بنجاح!";
-    } else {
-        $_SESSION['errors']['general'][] = "حدث خطأ أثناء التسجيل!";
-    }
-    $_SESSION['old'] = $_POST;
-    header("Location: ../views/register.php");
-    exit;
 }

@@ -6,12 +6,11 @@ class Database
     private static ?Database $instance = null;
     private PDO $connection;
 
-    private function __construct( $config)
+    private function __construct($config)
     {
         try {
             $dsn = "mysql:host={$config['host']};dbname={$config['dbName']}";
             $this->connection = new PDO($dsn, $config['user'], $config['password']);
-            echo "success";
         } catch (PDOException $ex) {
             die("Database connection failed: " . $ex->getMessage());
         }
@@ -30,5 +29,12 @@ class Database
         return $this->connection;
     }
 }
-
-$db = Database::get_instance($config);
+class Conn extends Database
+{
+    public static function connection(array $config): PDO
+    {
+        $db = Database::get_instance($config);
+        $pdo = $db->get_connection();
+        return $pdo;
+    }
+}
