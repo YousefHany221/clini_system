@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use Clini_system_mousa\Clinic_system\Clinic\Appointment;
 use Clini_system_mousa\Clinic_system\Clinic\Doctor;
+
 require_once __DIR__ . "/../../Clinic/Doctor.php";
 require_once __DIR__ . "/../../Clinic/Appointment.php";
 require_once __DIR__ . "/../../Clinic/Contact.php";
@@ -79,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_booking'])) {
       <div class="details-info d-flex flex-column gap-3">
         <h4 class="card-title fw-bold"><?php echo htmlspecialchars($doctor->getName() ?? ''); ?></h4>
         <h6 class="card-title fw-bold"><?php echo htmlspecialchars($doctor->getMajor() ?? ''); ?></h6>
+        <h6 class="card-title fw-bold"><?php echo htmlspecialchars($doctor->getPhone() ?? ''); ?></h6>
       </div>
     </div>
     <hr />

@@ -59,16 +59,39 @@ class Doctor
         }
         return $doctors;
     }
-    public static function get_doctor_by_id(PDO $pdo, $id): ?self{
+    public static function get_doctor_by_id(PDO $pdo, $id): ?self
+    {
         $sql = $pdo->prepare("SELECT * FROM doctor WHERE id = ?");
-      $success =  $sql->execute([$id]);
-      if($success){
-        $row = $sql->fetch(PDO::FETCH_ASSOC);
-        return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
-      }
-      return null;
+        $success =  $sql->execute([$id]);
+        if ($success) {
+            $row = $sql->fetch(PDO::FETCH_ASSOC);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+        }
+        return null;
+    }
+    public static function get_doctors_by_major(PDO $pdo, $major): array
+    {
+        $sql = $pdo->prepare("SELECT * FROM doctor WHERE major = ?");
+        $success = $sql->execute([$major]);
+        $doctors = [];
+        if ($success) {
+            $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+            }
+        }
+        return $doctors;
     }
 
-    
+    public static function get_all_majors(PDO $pdo): array
+    {
+        $sql = $pdo->prepare("SELECT DISTINCT major FROM doctor ORDER BY major");
+        $sql->execute();
+        $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $majors = [];
+        foreach ($rows as $row) {
+            $majors[] = $row['major'];
+        }
+        return $majors;
+    }
 }
-

@@ -1,6 +1,7 @@
 <?php
 
 use Clini_system_mousa\Clinic_system\Clinic\Doctor;
+
 require_once __DIR__ . "/../../Clinic/Doctor.php";
 require_once __DIR__ . "/../../Clinic/Appointment.php";
 require_once __DIR__ . "/../../Clinic/Contact.php";
@@ -10,7 +11,18 @@ require_once __DIR__ . "/../../Clinic/database.php";
 $db = \Database::get_instance($config);
 $pdo = $db->get_connection();
 
-$doctors = Doctor::get_info_doctros($pdo);
+// Get filter parameter
+$selectedMajor = $_GET['major'] ?? '';
+
+// Get doctors based on filter
+if (!empty($selectedMajor)) {
+    $doctors = Doctor::get_doctors_by_major($pdo, $selectedMajor);
+} else {
+    $doctors = Doctor::get_info_doctros($pdo);
+}
+
+// Get all available majors for the filter dropdown
+$allMajors = Doctor::get_all_majors($pdo);
 
 
 
@@ -27,19 +39,61 @@ $doctors = Doctor::get_info_doctros($pdo);
             <li class="breadcrumb-item active" aria-current="page">Doctors</li>
         </ol>
     </nav>
+    
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <form method="GET" action="./index.php" class="d-flex gap-2">
+                <input type="hidden" name="page" value="doctors">
+                <select name="major" class="form-select">
+                    <option value="">All Specializations</option>
+                    <?php foreach ($allMajors as $major): ?>
+                        <option value="<?php echo htmlspecialchars($major); ?>" 
+                                <?php echo ($selectedMajor === $major) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($major); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <?php if (!empty($selectedMajor)): ?>
+                    <a href="./index.php?page=doctors" class="btn btn-outline-secondary">Clear</a>
+                <?php endif; ?>
+            </form>
+        </div>
+    </div>
+    <?php if (!empty($selectedMajor)): ?>
+        <div class="alert alert-info text-center">
+            <strong>Showing doctors specialized in: <?php echo htmlspecialchars($selectedMajor); ?></strong>
+        </div>
+    <?php endif; ?>
+    
     <div class="doctors-grid d-flex flex-wrap gap-4 justify-content-center">
-        <?php foreach ($doctors as $doctor) : ?>
-            <div class="card p-2" style="width: 18rem;">
-                <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                    alt="doctor">
-                <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                    <h4 class="card-title fw-bold text-center"><?= $doctor->getName() ?></h4>
-                    <h6 class="card-title fw-bold text-center"><?= $doctor->getMajor() ?></h6>
-                    <a href="./index.php?page=doctor&id=<?= $doctor->getId() ?>" class="btn btn-outline-primary card-button">Book an
-                        appointment</a>
+        <?php if (empty($doctors)): ?>
+            <div class="col-12 text-center">
+                <div class="alert alert-warning">
+                    <h5>No doctors found</h5>
+                    <?php if (!empty($selectedMajor)): ?>
+                        <p>No doctors available for the specialization "<?php echo htmlspecialchars($selectedMajor); ?>"</p>
+                        <a href="./index.php?page=doctors" class="btn btn-primary">View All Doctors</a>
+                    <?php else: ?>
+                        <p>No doctors are currently available.</p>
+                    <?php endif; ?>
                 </div>
             </div>
-        <?php endforeach; ?>
+        <?php else: ?>
+            <?php foreach ($doctors as $doctor) : ?>
+                <div class="card p-2" style="width: 18rem;">
+                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
+                        alt="doctor">
+                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
+                        <h4 class="card-title fw-bold text-center"><?= $doctor->getName() ?></h4>
+                        <h6 class="card-title fw-bold text-center"><?= $doctor->getMajor() ?></h6>
+                        <a href="./index.php?page=doctor&id=<?= $doctor->getId() ?>" class="btn btn-outline-primary card-button">Book an
+                            appointment</a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
         <!-- <div class="card p-2" style="width: 18rem;">
                 <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
                     alt="major">
