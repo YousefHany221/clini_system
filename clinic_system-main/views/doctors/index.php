@@ -41,7 +41,7 @@ $allMajors = Doctor::get_all_majors($pdo);
     </nav>
     
     <!-- Filter Section -->
-    <div class="row mb-4">
+    <!-- <div class="row mb-4">
         <div class="col-md-6 mx-auto">
             <form method="GET" action="./index.php" class="d-flex gap-2">
                 <input type="hidden" name="page" value="doctors">
@@ -60,7 +60,7 @@ $allMajors = Doctor::get_all_majors($pdo);
                 <?php endif; ?>
             </form>
         </div>
-    </div>
+    </div> -->
     <?php if (!empty($selectedMajor)): ?>
         <div class="alert alert-info text-center">
             <strong>Showing doctors specialized in: <?php echo htmlspecialchars($selectedMajor); ?></strong>

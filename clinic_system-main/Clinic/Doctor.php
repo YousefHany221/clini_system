@@ -97,7 +97,7 @@ class Doctor
 
     public static function get_doctor_by_name(PDO $pdo, $name): ?self
     {
-        $sql = $pdo->prepare("SELECT * FROM doctro where name=?");
+        $sql = $pdo->prepare("SELECT * FROM doctro order by name=?");
         $success = $sql->execute([$name]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
@@ -106,14 +106,13 @@ class Doctor
         return null;
     }
 
-    public static function get_all_doctor_by_name(PDO $pdo):array|null
+    public static function get_all_doctor_by_name(PDO $pdo): array|null
     {
         $sql = $pdo->prepare("SELECT name from doctor order by name");
         $success = $sql->execute();
-
         if ($success) {
-            $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             $name = [];
+            $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as $row) {
                 $name[] = $row['name'];
             }
