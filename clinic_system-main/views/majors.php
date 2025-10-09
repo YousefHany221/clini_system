@@ -1,4 +1,3 @@
-
 <?php
 
 use Clini_system_mousa\Clinic_system\Clinic\Doctor;
@@ -11,12 +10,8 @@ require_once __DIR__ . "/../Clinic/database.php";
 $db = \Database::get_instance($config);
 $pdo = $db->get_connection();
 
-$doctors = Doctor::get_info_doctros($pdo);
-
-
-
-
-
+// Get unique majors instead of all doctors
+$majors = Doctor::get_all_majors($pdo);
 
 ?>
 <!DOCTYPE html>
@@ -35,18 +30,12 @@ $doctors = Doctor::get_info_doctros($pdo);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css"
         integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.rtl.min.css"
-        integrity="sha512-wO8UDakauoJxzvyadv1Fm/9x/9nsaNyoTmtsv7vt3/xGsug25X7fCUWEyBh1kop5fLjlcrK3GMVg8V+unYmrVA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
-
     <link rel="stylesheet" href="assets/styles/pages/main.css">
-
-    <title>Document</title>
+    <title>Majors - Clinic System</title>
 </head>
 
 <body>
     <div class="page-wrapper">
-
         <div class="container">
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="fw-bold my-4 h4">
                 <ol class="breadcrumb justify-content-center">
@@ -55,104 +44,16 @@ $doctors = Doctor::get_info_doctros($pdo);
                 </ol>
             </nav>
             <div class="majors-grid">
-                <?php foreach ($doctors as $doctor): ?>
+                <?php foreach ($majors as $major): ?>
                 <div class="card p-2" style="width: 18rem;">
                     <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
+                        alt="<?php echo htmlspecialchars($major); ?>">
                     <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center"><?php echo $doctor->getMajor(); ?></h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
+                        <h4 class="card-title fw-bold text-center"><?php echo htmlspecialchars($major); ?></h4>
+                        <a href="./index.php?page=doctors&major=<?php echo urlencode($major); ?>" class="btn btn-outline-primary card-button">Browse Doctors</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
-                <!-- <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div>
-                <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="major">
-                    <div class="card-body d-flex flex-column gap-1 justify-content-center">
-                        <h4 class="card-title fw-bold text-center">Major title</h4>
-                        <a href="./index.php?page=doctors" class="btn btn-outline-primary card-button">Browse Doctors</a>
-                    </div>
-                </div> -->
             </div>
 
             <nav class="mt-5" aria-label="navigation">
