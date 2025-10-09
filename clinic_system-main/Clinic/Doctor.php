@@ -94,4 +94,31 @@ class Doctor
         }
         return $majors;
     }
+
+    public static function get_doctor_by_name(PDO $pdo, $name): ?self
+    {
+        $sql = $pdo->prepare("SELECT * FROM doctro where name=?");
+        $success = $sql->execute([$name]);
+        if ($success) {
+            $row = $sql->fetch(PDO::FETCH_ASSOC);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+        }
+        return null;
+    }
+
+    public static function get_all_doctor_by_name(PDO $pdo):array|null
+    {
+        $sql = $pdo->prepare("SELECT name from doctor order by name");
+        $success = $sql->execute();
+
+        if ($success) {
+            $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $name = [];
+            foreach ($rows as $row) {
+                $name[] = $row['name'];
+            }
+            return $name;
+        }
+        return null;
+    }
 }
