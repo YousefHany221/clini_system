@@ -47,7 +47,7 @@ class Doctor
     {
         return $this->major;
     }
-
+    // ____________________________________________________________________________________________________//get_info_doctors//
     public static function get_info_doctros(PDO $pdo): array
     {
         $sql = $pdo->prepare("SELECT * FROM doctor");
@@ -59,6 +59,7 @@ class Doctor
         }
         return $doctors;
     }
+    // ____________________________________________________________________________________________________//get_doctor_by_id//
     public static function get_doctor_by_id(PDO $pdo, $id): ?self
     {
         $sql = $pdo->prepare("SELECT * FROM doctor WHERE id = ?");
@@ -69,6 +70,7 @@ class Doctor
         }
         return null;
     }
+    // ____________________________________________________________________________________________________//get_doctors_by_major//
     public static function get_doctors_by_major(PDO $pdo, $major): array
     {
         $sql = $pdo->prepare("SELECT * FROM doctor WHERE major = ?");
@@ -83,6 +85,7 @@ class Doctor
         return $doctors;
     }
 
+    // ____________________________________________________________________________________________________//get_all_majors//
     public static function get_all_majors(PDO $pdo): array
     {
         $sql = $pdo->prepare("SELECT DISTINCT major FROM doctor ORDER BY major");
@@ -95,9 +98,10 @@ class Doctor
         return $majors;
     }
 
+    // ____________________________________________________________________________________________________//get_doctor_by_name//
     public static function get_doctor_by_name(PDO $pdo, $name): ?self
     {
-        $sql = $pdo->prepare("SELECT * FROM doctro order by name=?");
+        $sql = $pdo->prepare("SELECT * FROM doctor where name=?");
         $success = $sql->execute([$name]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
@@ -105,8 +109,8 @@ class Doctor
         }
         return null;
     }
-
-    public static function get_all_doctor_by_name(PDO $pdo): array|null
+    // ____________________________________________________________________________________________________//get_all_doctor_by_name//
+    public static function get_all_doctor_by_name(PDO $pdo): ?array
     {
         $sql = $pdo->prepare("SELECT name from doctor order by name");
         $success = $sql->execute();
@@ -120,4 +124,34 @@ class Doctor
         }
         return null;
     }
+
+    // ____________________________________________________________________________________________________//get_doctor_by_email//
+
+    public static function get_doctor_by_email(PDO $pdo, $email): ?self
+    {
+        $sql = $pdo->prepare("SELECT * FROM doctor where email=?");
+        $success = $sql->execute([$email]);
+        if ($success) {
+            $row = $sql->fetch(PDO::FETCH_ASSOC);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+        }
+        return null;
+    }
+    // ____________________________________________________________________________________________________//create_doctor//
+    public static function create_doctor(PDO $pdo, $name, $email, $phone, $majors)
+    {
+
+        $sql = $pdo->prepare("INSERT INTO doctor (name,email,phone,major) VALUES (?,?,?,?)");
+        $success = $sql->execute([$name, $email, $phone, $majors]);
+        if ($success) {
+            $id = $pdo->lastInsertId();
+
+            return new self($id, $name, $email, $phone, $majors);
+        }
+        return  null;
+    }
 }
+
+
+
+
