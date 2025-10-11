@@ -27,6 +27,9 @@ switch ($page) {
     case 'appointment':
         require_once "views/doctors/doctor.php"; // Using doctor.php as appointment page
         break;
+    case 'dashpord':
+        require_once "views/dashboard.php"; // Using doctor.php as appointment page
+        break;
     default:
         require_once "views/home.php";
         break;

@@ -13,14 +13,16 @@ class Doctor
     private $phone;
 
     private $major;
+    // private $image;
 
-    public function __construct($id, $name, $email, $phone, $major)
+    public function __construct($id, $name, $email, $phone, $major/*,$image*/)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->phone = $phone;
         $this->major = $major;
+        // $this->image = $image;
     }
 
     public function getId()
@@ -55,7 +57,7 @@ class Doctor
         $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
         $doctors = [];
         foreach ($rows as $row) {
-            $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+            $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
         }
         return $doctors;
     }
@@ -66,7 +68,7 @@ class Doctor
         $success =  $sql->execute([$id]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
         }
         return null;
     }
@@ -79,7 +81,7 @@ class Doctor
         if ($success) {
             $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as $row) {
-                $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+                $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
             }
         }
         return $doctors;
@@ -105,7 +107,7 @@ class Doctor
         $success = $sql->execute([$name]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
         }
         return null;
     }
@@ -133,7 +135,7 @@ class Doctor
         $success = $sql->execute([$email]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
         }
         return null;
     }
@@ -146,12 +148,46 @@ class Doctor
         if ($success) {
             $id = $pdo->lastInsertId();
 
-            return new self($id, $name, $email, $phone, $majors);
+            return new self($id, $name, $email, $phone, $majors/*,$image*/);
         }
         return  null;
     }
+
+    // ____________________________________________________________________________________________________//create_doctor_with_image// using after add image in data base 
+    //     public static function create_doctor_with_image(PDO $pdo , $name, $email, $phone, $majors,$image):?self{
+
+    //         $sql=$pdo->prepare("INSERT INTO doctor(name,email,phone,major,image) values (?,?,?,?,?)");
+    //         $success=$sql->execute([$name,$email,$phone,$majors,$image]);
+    //         if($success){
+    //             $id=$pdo->lastInsertId();
+    //             return new self($id,$name,$email,$phone,$majors,$image);
+    //         }
+    //         return null;
+    //     }
+    // }
+
+    // ____________________________________________________________________________________________________//update doctor//
+
+    public static function update_doctor(PDO $pdo, $id, $name, $email, $phone, $majors): ?self
+    {
+        $sql = $pdo->prepare("UPDATE doctor SET name=?,email=?,phone=?,major=? WHERE id=?");
+        $success = $sql->execute([$name, $email, $phone, $majors, $id]);
+        if ($success && $sql->rowCount() > 0) {
+            return new self($id, $name, $email, $phone, $majors/*,$image*/);
+        }
+        return null;
+    }
+    // ____________________________________________________________________________________________________//delete doctor//
+
+    public static function delete_doctor(PDO $pdo, $id): bool
+    {
+        $sql = $pdo->prepare("DELETE FROM doctor WHERE id=?");
+        $success = $sql->execute([$id]);
+        return $success && $sql->rowCount() > 0;
+    }
+    // ____________________________________________________________________________________________________//delete doctor//
+
+
+
+
 }
-
-
-
-
