@@ -25,6 +25,8 @@ $userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
                     href="./index.php?page=doctors">Doctors</a>
                 <a type="button" class="btn btn-outline-light navigation--button"
                     href="./index.php?page=contact">Contact</a>
+                <a type="button" class="btn btn-outline-light navigation--button"
+                    href="./index.php?page=dashpord">admin</a>
 
                 <?php if ($isLoggedIn): ?>
                     <!-- Show user name and logout if logged in -->

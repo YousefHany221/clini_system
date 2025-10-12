@@ -71,9 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_booking'])) {
 
   <div class="d-flex flex-column gap-3 details-card doctor-details">
     <div class="details d-flex gap-2 align-items-center">
+      <?php 
+        $imagePath = "views/assets/images/majors/" . $doctor->getImage();
+        $defaultImage = "views/assets/images/major.jpg";
+        $imageToShow = file_exists($imagePath) ? $imagePath : $defaultImage;
+      ?>
       <img
-        src="views/assets/images/major.jpg"
-        alt="doctor"
+        src="<?= $imageToShow ?>"
+        alt="<?= htmlspecialchars($doctor->getMajor()) ?>"
         class="img-fluid rounded-circle"
         height="150"
         width="150" />

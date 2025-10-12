@@ -1,17 +1,9 @@
 <?php
 
-use Clini_system_mousa\Clinic_system\Clinic\Doctor;
+require_once __DIR__ ."/../Controllers/MajorControllers.php";
 require_once __DIR__ . "/../Clinic/Doctor.php";
-require_once __DIR__ . "/../Clinic/Appointment.php";
-require_once __DIR__ . "/../Clinic/Contact.php";
-require_once __DIR__ . "/../config/database.php";
-require_once __DIR__ . "/../Clinic/database.php";
 
-$db = \Database::get_instance($config);
-$pdo = $db->get_connection();
-
-// Get unique majors instead of all doctors
-$majors = Doctor::get_all_majors($pdo);
+use Clini_system_mousa\Clinic_system\Clinic\Doctor;
 
 ?>
 <!DOCTYPE html>
@@ -46,7 +38,14 @@ $majors = Doctor::get_all_majors($pdo);
             <div class="majors-grid">
                 <?php foreach ($majors as $major): ?>
                 <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
+                    <?php 
+                        // Use the new get_image_major function
+                        $imageName = Doctor::get_image_major($pdo, $major);
+                        $imagePath = "views/assets/images/majors/" . $imageName;
+                        $defaultImage = "views/assets/images/major.jpg";
+                        $imageToShow = file_exists($imagePath) ? $imagePath : $defaultImage;
+                    ?>
+                    <img src="<?= $imageToShow ?>" class="card-img-top rounded-circle card-image-circle"
                         alt="<?php echo htmlspecialchars($major); ?>">
                     <div class="card-body d-flex flex-column gap-1 justify-content-center">
                         <h4 class="card-title fw-bold text-center"><?php echo htmlspecialchars($major); ?></h4>

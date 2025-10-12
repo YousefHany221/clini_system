@@ -3,6 +3,9 @@ require_once "views/layout/header.php";
 require_once "views/layout/nav.php";
 $page = $_GET['page'] ?? 'home';
 switch ($page) {
+    case 'contact-controllers':
+        require_once "Controllers/ContactControllers.php";
+        break;
     case 'home':
         require_once "views/home.php";
         break;
@@ -28,7 +31,13 @@ switch ($page) {
         require_once "views/doctors/doctor.php"; // Using doctor.php as appointment page
         break;
     case 'dashpord':
-        require_once "views/dashboard.php"; // Using doctor.php as appointment page
+        require_once "views/admin/dashboard.php"; // Using doctor.php as appointment page
+        break;
+    case 'create_doctor':
+        require_once "views/admin/create_doctor.php"; // Using doctor.php as appointment page
+        break;
+    case 'apoiments':
+        require_once "views/admin/apoiments.php"; // Using doctor.php as appointment page
         break;
     default:
         require_once "views/home.php";
