@@ -13,16 +13,16 @@ class Doctor
     private $phone;
 
     private $major;
-    // private $image;
+    private $image;
 
-    public function __construct($id, $name, $email, $phone, $major/*,$image*/)
+    public function __construct($id, $name, $email, $phone, $major, $image)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->phone = $phone;
         $this->major = $major;
-        // $this->image = $image;
+        $this->image = $image;
     }
 
     public function getId()
@@ -49,6 +49,11 @@ class Doctor
     {
         return $this->major;
     }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
     // ____________________________________________________________________________________________________//get_info_doctors//
     public static function get_info_doctros(PDO $pdo): array
     {
@@ -57,7 +62,7 @@ class Doctor
         $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
         $doctors = [];
         foreach ($rows as $row) {
-            $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
+            $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major'], $row['image']);
         }
         return $doctors;
     }
@@ -68,7 +73,7 @@ class Doctor
         $success =  $sql->execute([$id]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major'], $row['image']);
         }
         return null;
     }
@@ -81,7 +86,7 @@ class Doctor
         if ($success) {
             $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as $row) {
-                $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
+                $doctors[] = new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major'], $row['image']);
             }
         }
         return $doctors;
@@ -107,7 +112,7 @@ class Doctor
         $success = $sql->execute([$name]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major'], $row['image']);
         }
         return null;
     }
@@ -135,45 +140,33 @@ class Doctor
         $success = $sql->execute([$email]);
         if ($success) {
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major']/*,$row['image']*/);
+            return new self($row['id'], $row['name'], $row['email'], $row['phone'], $row['major'], $row['image']);
         }
         return null;
     }
     // ____________________________________________________________________________________________________//create_doctor//
-    public static function create_doctor(PDO $pdo, $name, $email, $phone, $majors)
+    public static function create_doctor(PDO $pdo, $name, $email, $phone, $majors, $image)
     {
 
-        $sql = $pdo->prepare("INSERT INTO doctor (name,email,phone,major) VALUES (?,?,?,?)");
-        $success = $sql->execute([$name, $email, $phone, $majors]);
+        $sql = $pdo->prepare("INSERT INTO doctor (name,email,phone,major,image) VALUES (?,?,?,?,?)");
+        $success = $sql->execute([$name, $email, $phone, $majors, $image]);
         if ($success) {
             $id = $pdo->lastInsertId();
 
-            return new self($id, $name, $email, $phone, $majors/*,$image*/);
+            return new self($id, $name, $email, $phone, $majors, $image);
         }
         return  null;
     }
 
-    // ____________________________________________________________________________________________________//create_doctor_with_image// using after add image in data base 
-    //     public static function create_doctor_with_image(PDO $pdo , $name, $email, $phone, $majors,$image):?self{
-
-    //         $sql=$pdo->prepare("INSERT INTO doctor(name,email,phone,major,image) values (?,?,?,?,?)");
-    //         $success=$sql->execute([$name,$email,$phone,$majors,$image]);
-    //         if($success){
-    //             $id=$pdo->lastInsertId();
-    //             return new self($id,$name,$email,$phone,$majors,$image);
-    //         }
-    //         return null;
-    //     }
-    // }
 
     // ____________________________________________________________________________________________________//update doctor//
 
-    public static function update_doctor(PDO $pdo, $id, $name, $email, $phone, $majors): ?self
+    public static function update_doctor(PDO $pdo, $id, $name, $email, $phone, $majors, $image): ?self
     {
-        $sql = $pdo->prepare("UPDATE doctor SET name=?,email=?,phone=?,major=? WHERE id=?");
-        $success = $sql->execute([$name, $email, $phone, $majors, $id]);
+        $sql = $pdo->prepare("UPDATE doctor SET name=?,email=?,phone=?,major=?,image=? WHERE id=?");
+        $success = $sql->execute([$name, $email, $phone, $majors, $image, $id]);
         if ($success && $sql->rowCount() > 0) {
-            return new self($id, $name, $email, $phone, $majors/*,$image*/);
+            return new self($id, $name, $email, $phone, $majors, $image);
         }
         return null;
     }
@@ -185,7 +178,39 @@ class Doctor
         $success = $sql->execute([$id]);
         return $success && $sql->rowCount() > 0;
     }
-    // ____________________________________________________________________________________________________//delete doctor//
+    // ____________________________________________________________________________________________________//get_image_major//
+    
+    public static function get_image_major(PDO $pdo, $major): ?string
+   {
+       // Get the first doctor with this major to get the image
+       $sql = $pdo->prepare("SELECT image FROM doctor WHERE major = ? LIMIT 1");
+       $success = $sql->execute([$major]);
+       
+       if ($success) {
+           $row = $sql->fetch(PDO::FETCH_ASSOC);
+           if ($row) {
+               return $row['image'];
+           }
+       }
+       
+       // If no doctor found with this major, return a default image name based on major
+       $sanitizedMajor = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($major));
+       return $sanitizedMajor . '.jpg';
+   }
+   // ____________________________________________________________________________________________________//get_count_doctors   //
+
+   public static function get_count_doctors(PDO $pdo): int
+   {
+       $sql = $pdo->prepare("SELECT COUNT(*) as total FROM doctor");
+       $sql->execute();
+       $result = $sql->fetch(PDO::FETCH_ASSOC);
+       return (int) $result['total'];
+   }
+
+
+
+
+
 
 
 

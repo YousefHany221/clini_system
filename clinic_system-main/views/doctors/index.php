@@ -83,8 +83,13 @@ $allMajors = Doctor::get_all_majors($pdo);
         <?php else: ?>
             <?php foreach ($doctors as $doctor) : ?>
                 <div class="card p-2" style="width: 18rem;">
-                    <img src="views/assets/images/major.jpg" class="card-img-top rounded-circle card-image-circle"
-                        alt="doctor">
+<?php 
+                        $imagePath = "views/assets/images/majors/" . $doctor->getImage();
+                        $defaultImage = "views/assets/images/major.jpg";
+                        $imageToShow = file_exists($imagePath) ? $imagePath : $defaultImage;
+                    ?>
+                    <img src="<?= $imageToShow ?>" class="card-img-top rounded-circle card-image-circle"
+                        alt="<?= htmlspecialchars($doctor->getMajor()) ?>">
                     <div class="card-body d-flex flex-column gap-1 justify-content-center">
                         <h4 class="card-title fw-bold text-center"><?= $doctor->getName() ?></h4>
                         <h6 class="card-title fw-bold text-center"><?= $doctor->getMajor() ?></h6>

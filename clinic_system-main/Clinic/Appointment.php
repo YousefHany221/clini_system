@@ -27,6 +27,21 @@ class Appointment
         return $this->id;
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
     public static function create_appointment(PDO $pdo, $name, $email, $phone): ?self
     {
         $sql = $pdo->prepare("INSERT INTO appointment (name,email,phone) VALUES (?, ?, ?)");
@@ -68,5 +83,13 @@ class Appointment
         $sql = $pdo->prepare("DELETE FROM appointment WHERE id=?");
         $success = $sql->execute([$id]);
         return $success && $sql->rowCount() > 0;
+        
+    }
+    // ____________________________________________________________________________________________________//get_all_appointment//
+    public static function get_all_appointment(PDO $pdo){
+        $sql=$pdo->prepare("SELECT COUNT(*) as total FROM appointment");
+        $sql->execute();
+        $result=$sql->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
     }
 }

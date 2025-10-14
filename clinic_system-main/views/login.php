@@ -1,13 +1,9 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$errors = $_SESSION['errors'] ?? [];
-$old = $_SESSION['old'] ?? [];
-$success = $_SESSION['success'] ?? '';
-unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
-?>
 
+<?php
+    require_once __DIR__. "/../Controllers/LoginControllers.php";
+
+
+?>
 <div class="container">
     <div class="d-flex flex-column gap-3 account-form mx-auto mt-5">
         
